@@ -1,0 +1,247 @@
+<!docttype html>
+
+<html>
+
+<head>
+
+	<title> Emergency Calls - Predicting the Future </title>
+	<style>
+		body {
+			background-image:url(aqua_gradient.png);
+			background-repeat: repeat-x;
+		}
+		#tables1 {
+			position: absolute;
+			left: 300px;
+			height: 250px
+		}
+		#tables2 {
+			position: absolute;
+			left: 100px;
+			height: 250px
+		}
+		h1 {
+			text-align:center;
+		}
+	</style>
+</head>
+
+<body>
+	<style>
+		body {
+			background-color:rgb(72,203,207);
+		}
+	</style>
+
+	<br/>
+	<h1>Emergency Calls - Predicting the Future</h1>
+	<br/>
+	<br/>
+	<br/>
+	
+	
+	
+	<script type="text/javascript">
+		
+		function calcDis(loc, h, m, s) {
+			var iframe = document.createElement('iframe');
+			iframe.id = 'iframe';
+			iframe.style.display = 'none';
+			document.body.appendChild(iframe);
+			iframe.src = 'time.txt';
+		    setTimeout(function () {
+				text = document.getElementById('iframe').contentDocument.body.firstChild.innerHTML; //31 per line, start at 11
+				cData(text, loc, h, m, s);
+			}, 1000);
+		}
+		
+		function cData(tText, loc, h, m, s) {
+			var curr = 0;
+			var total1 = 0;
+			var total2 = 0;
+			var total3 = 0;
+			var total4 = 0;
+			var total5 = 0;
+			var total6 = 0;
+			var count1 = 0;
+			var count2 = 0;
+			var count3 = 0;
+			var count4 = 0;
+			var count5 = 0;
+			var count6 = 0;
+			var goal = (parseInt(h)*10000) + (parseInt(m)*100) + parseInt(s)
+			for (i = 0; i < 10000; i ++) {
+				var hold = parseInt(text.substr(11 + (i*31),2)) * 10000;
+				var dif = 0//Math.abs(hold - (parseInt(h) * 10000);
+				if (dif > 120000) {
+					dif = 240000 - dif;
+				}
+				hold = parseInt(text.substr(14 + (i*31),2)) * 100;
+				//hold = Math.abs(hold - (parseInt(m) * 100);
+				if (hold > 3000) {
+					hold = 6000 - hold;
+				}
+				dif += hold;
+				hold = parseInt(text.substr(17 + (i*31),2));
+				//hold = Math.abs(hold - (parseInt(s));
+				if (hold > 30) {
+					hold = 60 - hold;
+				}
+				dif += hold;
+				var str = text.substr(310000 + curr, 1);
+				if (str == "C") {
+					if (text.substr(310000 + curr + 1, 1) == "o") {
+						total1 += dif;
+						curr += 16;
+						count1++;
+					}
+					else {
+						total2 += dif;
+						curr += 9;
+						count2++;
+					}
+				}
+				else if (str == "P") {
+					total2 += dif;
+					curr += 26;
+					count2++;
+				}
+				else if (str == "N") {
+					total2 += dif;
+					curr += 8;
+					count2++;
+				}
+				else if (str == "U") {
+					total2 += dif;
+					curr += 16;
+					count2++;
+				}
+				else if (str == "G") {
+					total2 += dif;
+					curr += 15;
+					count2++;
+				}
+				else if (str == "O") {
+					total2 += dif;
+					curr += 5;
+					count2++;
+				}
+				else if (str == "A") {
+					total3 += dif;
+					curr += 22;
+					count3++;
+				}
+				else if (str == "M") {
+					total4 += dif;
+					curr += 16;
+					count4++;
+				}
+				else if (str == "F") {
+					total5 += dif;
+					curr += 4;
+					count5++;
+				}
+				else if (str == "S"){
+					total6 += dif;
+					curr += 4;
+					count6++;
+				}
+				else {
+					curr++;
+				}
+			}
+			total1 /= count1;
+			total2 /= count2;
+			total3 /= count3;
+			total4 /= count4;
+			total5 /= count5;
+			total6 /= count6;
+			//alert(total1 + " " + total2 + " " + total3 + " " + total4 + " " + total5 + " " + total6);
+			var lowest = Math.min(total1, total2, total3, total4, total5, total6);
+			var likely = "";
+			var num = 0;
+			if (total1 == lowest) {
+				likely += "\nCode 2 Transport\nCode 3 Transport";
+				num = 2;
+			}
+			else if (total2 == lowest) {
+				likely += "\nUndetermined.  Previous incidents under this condition have resulted in one of the following:\nPatient Declined Transport\nNo Merit\nCancelled\nGone on Arrival\nUnable to Locate\nOther"
+				num = 6;
+			}
+			else if (total3 == lowest) {
+				likely += "\nAgainst Medical Advice";
+				num++;
+			}
+			else if (total4 == lowest) {
+				likely += "\nMedical Examiner Required";
+				num++;
+			}
+			else if (total5 == lowest) {
+				likely += "\nFire";
+				num++;
+			}
+			else {
+				likely += "\nSFPD";
+				num++;
+			}
+			if (num == 0) {
+				alert("Error: no matches found");
+			}
+			else if (num == 1) {
+				alert("These conditions would most likely require a dispatch for:" + likely)
+			}
+			else {
+				alert("These conditions would most likely require one of the following dispatches:" + likely);
+			}
+		}
+		
+	</script>
+	
+	Emergencies can be very difficult to predict, and require fast responce times to get to those in need.  Often times, the severity or type of emergency can be unknown until help arrives on the scene, so every assistance dispatch must have tools and skill to assist every situation.  However, personnel are often focussed on dealing with a specific situation, and may not be able to help as effectively as another dispatch.  Therefore, predicting what type of assistance is needed can be crucial in saving lives.  Below, there are several graphs displaying what incidents occured during one week in January (1/13-1/24) 2018, and when they occured.
+	<br/>
+	<br/>
+	
+	
+	<img id="tables1" src="incidents_per_day.png" /><br/>
+	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+	As shown in the graph above, which displays the number of recorded accidents in San Fransisco from January 13th to January 24th of this year, hundreds of accidents happen every day. However, they are not on a constant timer. Several trends can be noticed about when accidents specifically tend to occur. <br/>
+	<br/>
+	This includes that accidents seem to happen notably more frequently during the weekends (1/13-1/14, 1/19-1/21).  One also might note there seem to be notably more accidents due to Martin Luther King Day (1/15), as there is an increase of the number of incidents on that Monday and the following Tuesday. 
+	<br/>
+	<br/>
+	<br/>
+	<img id="tables2" src="type_of_incidents.png" /><br/>
+	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+	This graph displays the number of each disposition of incident, as well as a pie chart comparing their percentages.  As one can see, most incidents occuring during this week were labeled as Code 2 Transport.  The majority of the remaining significantly involved a fire.  
+	<br/>
+	<br/>
+	An easy assumption is that any incident is likely under the juristiction of a code 2 transport or involves a fire.  Yet we can predict even more accurately by running the data of the time and location each incident occured and comparing it to a per-determined time and place.  To predict dispatch required, select the city and time of the upcoming incident.
+	<form>
+		City: 
+		<select name="location">
+			<option value="sanF">San Francisco</option>
+			<option value="pres">Presidio</option>
+			<option value="yerba">Yerba Buena</option>
+			<option value="tres">Treasure Isla</option>
+			<option value="hunt">Hunters Point</option>
+			<option value="fort">Fort Mason</option>
+		</select>
+		Time: <input type="text" name="hour" size="1" maxlength="2" />
+		:<input type="text" name="min" size="1" maxlength="2" />
+		:<input type="text" name="sec" size="1" maxlength="2" /> </br>
+		<input type="button" value="Enter" onClick="calcDis(location, hour, min, sec)" />
+	</form>
+	
+	<br/>
+	<img id="tables1" src="incident_seriousness.png" /><br/>
+	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+	The seriousness of incidents can be an important factor as well.  The greater the risk to a citizen's life, the more urgently immediate help is required.  The above graph compares the recorded dispositions of the accidents by percentages. 
+	<br/>
+	<br/>
+	Accidents can be life-threatening, and nothing is more important than saving a life, but knowing when help is needed can impede the struggle to protect citizens.  Not to mention, getting help to the outer areas of San Fransisco can take much longer.  Many reports for that week in January recorded a response time up to three times longer for reaching people in those outer areas than that for an incidient in the center of the city.  Algorithms that can predict incidents, however, may just be able to help keep more people alive and well.
+	<br/>
+	<br/>
+	
+</body>
+
+</html>
