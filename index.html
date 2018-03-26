@@ -43,7 +43,7 @@
 	
 	<script type="text/javascript">
 		
-		function calcDis(loc, h, m, s) {
+		function calcDis(loc, h, m, s) { //Loads data file & calls next function
 			var iframe = document.createElement('iframe');
 			iframe.id = 'iframe';
 			iframe.style.display = 'none';
@@ -56,20 +56,23 @@
 		}
 		
 		function cData(tText, loc, h, m, s) {
-			var curr = 0;
-			var total1 = 0;
+			var curr = 0; //Counter for disposition strings
+			var total1 = 0; //Total likelihood scores
 			var total2 = 0;
 			var total3 = 0;
 			var total4 = 0;
 			var total5 = 0;
 			var total6 = 0;
-			var count1 = 0;
+			var count1 = 0; //# of each disposition category
 			var count2 = 0;
 			var count3 = 0;
 			var count4 = 0;
 			var count5 = 0;
 			var count6 = 0;
-			for (i = 0; i < 10000; i++) {
+			for (i = 0; i < 10000; i++) { //Loop through all entries
+			
+				//First, get the difference between the times
+				//We don't combine the hour/minute/second first because they won't carry over at 24/60/60 respectively
 				var hold = parseInt(text.substr(11 + (i*31),2)) * 10000;
 				var dif = Math.abs(hold - (h * 10000));
 				if (dif > 120000) {
@@ -87,6 +90,8 @@
 					hold = 60 - hold;
 				}
 				dif += hold;
+				
+				//Determine what the string is to add to the right total
 				var str = text.substr(310000 + curr, 1);
 				if (str == "C") {
 					if (text.substr(310000 + curr + 1, 1) == "o") {
@@ -149,13 +154,19 @@
 					curr++;
 				}
 			}
+			//Average out the totals among their collective values
 			total1 /= count1;
 			total2 /= count2;
 			total3 /= count3;
 			total4 /= count4;
 			total5 /= count5;
 			total6 /= count6;
-			alert(total1 + " " + total2 + " " + total3 + " " + total4 + " " + total5 + " " + total6);
+			
+			//Only for testing
+			//alert(total1 + " " + total2 + " " + total3 + " " + total4 + " " + total5 + " " + total6);
+			
+			//Detemine minimum (closest) and assign the appropriate string.
+			//Using only if statements (not else) means we can have multiple minimums
 			var lowest = Math.min(total1, total2, total3, total4, total5, total6);
 			var likely = "";
 			var num = 0;
@@ -163,23 +174,23 @@
 				likely += "\nCode 2 Transport\nCode 3 Transport";
 				num = 2;
 			}
-			else if (total2 == lowest) {
+			if (total2 == lowest) {
 				likely += "\nUndetermined.  Previous incidents under this condition have resulted in one of the following:\nPatient Declined Transport\nNo Merit\nCancelled\nGone on Arrival\nUnable to Locate\nOther"
 				num = 6;
 			}
-			else if (total3 == lowest) {
+			if (total3 == lowest) {
 				likely += "\nAgainst Medical Advice";
 				num++;
 			}
-			else if (total4 == lowest) {
+			if (total4 == lowest) {
 				likely += "\nMedical Examiner Required";
 				num++;
 			}
-			else if (total5 == lowest) {
+			if (total5 == lowest) {
 				likely += "\nFire";
 				num++;
 			}
-			else {
+			if (total6 == lowest) {
 				likely += "\nSFPD";
 				num++;
 			}
