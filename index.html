@@ -51,7 +51,7 @@
 			iframe.src = 'time.txt';
 		    setTimeout(function () {
 				text = document.getElementById('iframe').contentDocument.body.firstChild.innerHTML; //31 per line, start at 11
-				cData(text, loc, h, m, s);
+				cData(text, loc, parseInt(h), parseInt(m), parseInt(s));
 			}, 1000);
 		}
 		
@@ -69,21 +69,20 @@
 			var count4 = 0;
 			var count5 = 0;
 			var count6 = 0;
-			var goal = (parseInt(h)*10000) + (parseInt(m)*100) + parseInt(s)
-			for (i = 0; i < 10000; i ++) {
+			for (i = 0; i < 10000; i++) {
 				var hold = parseInt(text.substr(11 + (i*31),2)) * 10000;
-				var dif = 0//Math.abs(hold - (parseInt(h) * 10000);
+				var dif = Math.abs(hold - (h * 10000));
 				if (dif > 120000) {
 					dif = 240000 - dif;
 				}
 				hold = parseInt(text.substr(14 + (i*31),2)) * 100;
-				//hold = Math.abs(hold - (parseInt(m) * 100);
+				hold = Math.abs(hold - (m * 100));
 				if (hold > 3000) {
 					hold = 6000 - hold;
 				}
 				dif += hold;
 				hold = parseInt(text.substr(17 + (i*31),2));
-				//hold = Math.abs(hold - (parseInt(s));
+				hold = Math.abs(hold - (s));
 				if (hold > 30) {
 					hold = 60 - hold;
 				}
@@ -156,7 +155,7 @@
 			total4 /= count4;
 			total5 /= count5;
 			total6 /= count6;
-			//alert(total1 + " " + total2 + " " + total3 + " " + total4 + " " + total5 + " " + total6);
+			alert(total1 + " " + total2 + " " + total3 + " " + total4 + " " + total5 + " " + total6);
 			var lowest = Math.min(total1, total2, total3, total4, total5, total6);
 			var likely = "";
 			var num = 0;
@@ -226,10 +225,13 @@
 			<option value="hunt">Hunters Point</option>
 			<option value="fort">Fort Mason</option>
 		</select>
-		Time: <input type="text" name="hour" size="1" maxlength="2" />
-		:<input type="text" name="min" size="1" maxlength="2" />
-		:<input type="text" name="sec" size="1" maxlength="2" /> </br>
-		<input type="button" value="Enter" onClick="calcDis(location, hour, min, sec)" />
+		<label for="hour">Time:</label> 
+		<input type="text" id="hour" name="h" size="1" maxlength="2" />
+		<label for="minute">:</label> 
+		<input type="text" id="minute" name="m" size="1" maxlength="2" />
+		<label for="sec">:</label> 
+		<input type="text" id="sec" name="s" size="1" maxlength="2" /> </br>
+		<input type="button" value="Enter" onClick="calcDis(location, hour.value, minute.value, sec.value)" />
 	</form>
 	
 	<br/>
